@@ -10,7 +10,6 @@ if __name__ == '__main__':
       last_name='Admin',
       email='admin@bookstore.com',
       phone='+1 11 11 11 11',
-      # TODO: replace with hased string
       password='12345678',
       role_id=admin_user_role.id,
     )

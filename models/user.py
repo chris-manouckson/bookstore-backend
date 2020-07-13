@@ -1,3 +1,8 @@
+from os import environ
+import datetime
+
+from flask_bcrypt import Bcrypt
+
 from db import *
 
 # INFO: users-books many to many relationship
@@ -6,6 +11,8 @@ users_books = db.Table(
   db.Column('user_id', db.Integer, db.ForeignKey('users.id'), primary_key=True),
   db.Column('book_id', db.Integer, db.ForeignKey('books.id'), primary_key=True)
 )
+
+bcrypt = Bcrypt()
 
 class User(db.Model):
   __tablename__ = 'users'
@@ -39,8 +46,21 @@ class User(db.Model):
     self.last_name = last_name
     self.email = email
     self.phone = phone
-    self.password = password
+    self.password = bcrypt.generate_password_hash(password).decode()
     self.role_id = role_id
-  
+
   def __repr__(self):
     return '<id {}>'.format(self.id)
+
+  def get_data(self):
+    return {
+      'id': self.id,
+      'first_name': self.first_name,
+      'last_name': self.last_name,
+      'email': self.email,
+      'phone': self.phone,
+      'role': {
+        'title': self.role.title,
+        'description': self.role.description,
+      },
+    }
