@@ -17,6 +17,9 @@ class AuthInvalidPasswordError(HTTPException):
 class AuthUnauthorizedError(HTTPException):
   pass
 
+class AuthAdminUserRoleRequiredError(HTTPException):
+  pass
+
 def create_message_data(text=''):
   """Creates objects that fits response message format"""
 
@@ -46,5 +49,9 @@ errors = {
   'AuthUnauthorizedError': {
     'message': create_message_data('Unauthorized.'),
     'status': 401,
+  },
+  'AuthAdminUserRoleRequiredError': {
+    'message': create_message_data('Admin user role required.'),
+    'status': 403,
   },
 }

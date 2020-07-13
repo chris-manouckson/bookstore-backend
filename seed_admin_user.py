@@ -8,9 +8,9 @@ if __name__ == '__main__':
     User(
       first_name='Admin',
       last_name='Admin',
-      email='admin@bookstore.com',
+      email='admin@bookstore.example',
       phone='+1 11 11 11 11',
-      password='12345678',
+      password='qQ123456789!',
       role_id=admin_user_role.id,
     )
   )
