@@ -23,11 +23,18 @@ class AuthSignup(Resource):
   def post(self):
     request_data = request.get_json()
 
-    first_name = request_data['first_name']
-    last_name = request_data['last_name']
-    email = request_data['email']
-    phone = request_data['phone']
-    password = request_data['password']
+    if 'first_name' in request_data:
+      first_name = request_data['first_name']
+    if 'last_name' in request_data:
+      last_name = request_data['last_name']
+    if 'email' in request_data:
+      email = request_data['email']
+    if 'phone' in request_data:
+      phone = request_data['phone']
+    if 'password' in request_data:
+      password = request_data['password']
+    if 'role_id' in request_data:
+      role_id = request_data['role_id']
 
     if User.query.filter_by(email=email).first() or User.query.filter_by(phone=phone).first():
       raise AuthUserAlreadyExistsError
@@ -48,8 +55,7 @@ class AuthSignup(Resource):
 
     response_data = {
       'user': new_user.get_data(),
-      # TODO: generate refresh token
-      'refresh_token': token_mock,
+      'refresh_token': create_refresh_token(identity=new_user.id),
     }
     response_message = {
       'text': 'Your author account has been successfully created.',
