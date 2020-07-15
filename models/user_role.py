@@ -15,3 +15,10 @@ class UserRole(db.Model):
 
   def __repr__(self):
     return '<id {}>'.format(self.id)
+
+  def get_data(self):
+    return {
+      'id': self.id,
+      'title': self.title,
+      'description': self.description,
+    }

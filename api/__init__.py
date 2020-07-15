@@ -21,7 +21,15 @@ api.add_resource(UsersAll, '/api/v1/users', endpoint='users_all')
 api.add_resource(UsersOne, '/api/v1/users/<int:user_id>', endpoint='users_one')
 
 # INFO: admin related API resources
-from .v1.admin import AdminUsers, AdminUsersOne
+from .v1.admin import (
+  AdminUsers,
+  AdminUsersOne,
+  AdminUserRoles,
+  AdminUserRolesOne,
+)
+
+api.add_resource(AdminUserRoles, '/api/v1/admin/user-roles', endpoint='admin_user_roles')
+api.add_resource(AdminUserRolesOne, '/api/v1/admin/user-roles/<int:user_role_id>', endpoint='admin_user_roles_one')
 
 api.add_resource(AdminUsers, '/api/v1/admin/users', endpoint='admin_users')
 api.add_resource(AdminUsersOne, '/api/v1/admin/users/<int:user_id>', endpoint='admin_users_one')

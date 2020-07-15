@@ -4,7 +4,7 @@ from flask_jwt_extended import jwt_required, get_jwt_identity
 
 from db import *
 from jwt_manager import *
-from models import UserRole, User, bcrypt
+from models import User, UserRole
 from .admin_user_role_required import *
 
 from .errors import (
@@ -81,3 +81,25 @@ class AdminUsersOne(Resource):
     }
 
     return jsonify(message=response_message, status=201)
+
+class AdminUserRoles(Resource):
+  @admin_user_role_required
+  def get(self):
+    user_roles = UserRole.query.all()
+
+    response_data = {
+      'user_roles': [user_role.get_data() for user_role in user_roles],
+    }
+
+    return jsonify(data=response_data, status=200)
+
+class AdminUserRolesOne(Resource):
+  @admin_user_role_required
+  def get(self, user_role_id):
+    user_role = UserRole.query.get(user_role_id)
+
+    response_data = {
+      'user_role': user_role.get_data(),
+    }
+
+    return jsonify(data=response_data, status=200)
