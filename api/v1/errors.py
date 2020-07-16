@@ -36,6 +36,11 @@ class UsersUserAlreadyExistsError(HTTPException):
 class UserRolesByIdNotFoundError(HTTPException):
   pass
 
+# INFO: books related errors
+
+class BooksByIdNotFoundError(HTTPException):
+  pass
+
 def create_message_data(text=''):
   """Creates objects that fits response message format"""
 
@@ -86,6 +91,11 @@ errors = {
 
   'UserRolesByIdNotFoundError': {
     'message': create_message_data('User role with provided id not found.'),
+    'status': 404,
+  },
+
+  'BooksByIdNotFoundError': {
+    'message': create_message_data('Book with provide id not found.'),
     'status': 404,
   },
 }

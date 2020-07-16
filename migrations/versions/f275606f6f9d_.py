@@ -21,6 +21,7 @@ def upgrade():
     op.add_column('books', sa.Column('price_ammount', sa.Float(), nullable=True))
     op.add_column('books', sa.Column('price_currency', sa.String(), nullable=True))
     op.drop_column('books', 'price')
+    op.alter_column('books', 'isbn', existing_type=sa.Integer(), type_=sa.String())
     # ### end Alembic commands ###
 
 
@@ -29,4 +30,5 @@ def downgrade():
     op.add_column('books', sa.Column('price', postgresql.JSON(astext_type=sa.Text()), autoincrement=False, nullable=True))
     op.drop_column('books', 'price_currency')
     op.drop_column('books', 'price_ammount')
+    op.alter_column('books', 'isbn', existing_type=sa.String(), type_=sa.Integer())
     # ### end Alembic commands ###

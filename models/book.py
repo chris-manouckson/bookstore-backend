@@ -7,7 +7,7 @@ class Book(db.Model):
   id = db.Column(db.Integer, primary_key=True)
   title = db.Column(db.String(), nullable=False)
   description = db.Column(db.Text(), default='')
-  isbn = db.Column(db.Integer, nullable=False)
+  isbn = db.Column(db.String(), nullable=False)
   price_ammount = db.Column(db.Float(), default=0)
   price_currency = db.Column(db.String(), default=price_currencies['usd'])
 
@@ -23,3 +23,15 @@ class Book(db.Model):
   
   def __repr__(self):
     return '<id {}>'.format(self.id)
+  
+  def get_data(self):
+    return {
+      'id': self.id,
+      'title': self.title,
+      'description': self.description,
+      'isbn': self.isbn,
+      'price': {
+        'ammount': self.price_ammount,
+        'currency': self.price_currency,
+      },
+    }

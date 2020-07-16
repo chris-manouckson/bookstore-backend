@@ -20,6 +20,13 @@ from .v1.users import UsersAll, UsersOne
 api.add_resource(UsersAll, '/api/v1/users', endpoint='users_all')
 api.add_resource(UsersOne, '/api/v1/users/<int:user_id>', endpoint='users_one')
 
+# INFO: books related API resources
+from .v1.books import BooksAll, BooksOwn, BooksOne
+
+api.add_resource(BooksAll, '/api/v1/books', endpoint='books_all')
+api.add_resource(BooksOwn, '/api/v1/books/own', endpoint='books_own')
+api.add_resource(BooksOne, '/api/v1/books/<int:book_id>', endpoint='books_one')
+
 # INFO: admin related API resources
 from .v1.admin import (
   AdminUsers,
