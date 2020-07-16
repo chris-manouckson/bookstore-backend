@@ -28,6 +28,22 @@ class UsersAll(Resource):
     }
 
     return jsonify(data=response_data, status=200)
+  
+  @jwt_required
+  def delete(self):
+    current_user_id = get_jwt_identity()
+
+    user = User.query.get(current_user_id)
+
+    db.session.delete(user)
+    db.session.commit()
+
+    response_message = {
+      'text': 'Your account was successfully deleted.',
+      'type': 'success',
+    }
+
+    return jsonify(message=response_message, status=201)
 
 class UsersOne(Resource):
   def get(self, user_id):
@@ -72,25 +88,3 @@ class UsersOne(Resource):
     }
 
     return jsonify(data=response_data, message=response_message, status=200)
-  
-  @jwt_required
-  def delete(self, user_id):
-    current_user_id = get_jwt_identity()
-
-    if current_user_id != user_id:
-      raise ForbiddenError
-
-    user = User.query.get(user_id)
-
-    if not user:
-      raise UsersByIdNotFoundError
-
-    db.session.delete(user)
-    db.session.commit()
-
-    response_message = {
-      'text': 'Your account was successfully deleted.',
-      'type': 'success',
-    }
-
-    return jsonify(message=response_message, status=201)
