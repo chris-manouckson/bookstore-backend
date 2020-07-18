@@ -35,3 +35,7 @@ class Book(db.Model):
         'currency': self.price_currency,
       },
     }
+  
+  @staticmethod
+  def get_column_names():
+    return [str(column).split('.')[1] for column in Book.__table__.columns]

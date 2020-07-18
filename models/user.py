@@ -64,3 +64,7 @@ class User(db.Model):
         'description': self.role.description,
       },
     }
+  
+  @staticmethod
+  def get_column_names():
+    return [str(column).split('.')[1] for column in User.__table__.columns]

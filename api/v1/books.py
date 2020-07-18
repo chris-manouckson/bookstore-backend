@@ -1,12 +1,15 @@
 from flask import request, jsonify
 from flask_restful import Resource
 from flask_jwt_extended import jwt_required, get_jwt_identity
+from sqlalchemy import desc
 
 from db import *
 from jwt_manager import *
 from models import User, Book
 from .admin_user_role_required import *
 from .parse_pagination_query import *
+from .parse_order_query import *
+
 from constants import price_currencies
 
 from mocks.book_isbn import book_isbn_mock
@@ -68,8 +71,19 @@ class BooksAll(Resource):
     return jsonify(data=response_data, message=response_message, status=200)
 
   @parse_pagination_query
-  def get(self, offset, limit):
+  @parse_order_query
+  def get(self, offset, limit, order=('id', 'asc')):
     books_query = Book.query
+
+    order_column_name, order_direction = order
+
+    book_column_names = Book.get_column_names()
+
+    if order_column_name in book_column_names:
+      if order_direction == 'desc':
+        books_query = books_query.order_by(desc(order_column_name))
+      else:
+        books_query = books_query.order_by(order_column_name)
 
     books_total = books_query.count()
 
@@ -81,7 +95,11 @@ class BooksAll(Resource):
         'offset': offset,
         'limit': limit,
         'total': books_total,
-      }
+      },
+      'order': {
+        'column_name': order_column_name,
+        'direction': order_direction,
+      },
     }
 
     return jsonify(data=response_data, status=200)

@@ -1,12 +1,14 @@
 from flask import request, jsonify
 from flask_restful import Resource, reqparse
 from flask_jwt_extended import jwt_required, get_jwt_identity
+from sqlalchemy import asc, desc
 
 from db import *
 from jwt_manager import *
 from models import UserRole, User, bcrypt
 from .admin_user_role_required import *
 from .parse_pagination_query import *
+from .parse_order_query import *
 
 from mocks.user import user_mock
 from mocks.token import token_mock
@@ -19,11 +21,27 @@ from .errors import (
 
 class UsersAll(Resource):
   @parse_pagination_query
-  def get(self, offset, limit):
+  @parse_order_query
+  def get(self, offset, limit, order=('id', 'asc')):
+    users_query = User.query
+
     author_user_role = UserRole.query.filter_by(title='author').first()
 
-    users_query = User.query.filter_by(role_id=author_user_role.id)
+    if not author_user_role:
+      raise UserRolesByIdNotFoundError
 
+    users_query = users_query.filter_by(role_id=author_user_role.id)
+
+    user_column_names = User.get_column_names()
+
+    order_column_name, order_direction = order
+
+    if order_column_name in user_column_names:
+      if order_direction == 'desc':
+        users_query = users_query.order_by(desc(order_column_name))
+      else:
+        users_query = users_query.order_by(order_column_name)
+    
     users_total = users_query.count()
 
     users = users_query.offset(offset).limit(limit)
@@ -34,6 +52,10 @@ class UsersAll(Resource):
         'offset': offset,
         'limit': limit,
         'total': users_total,
+      },
+      'order': {
+        'column_name': order_column_name,
+        'direction': order_direction,
       },
     }
 
