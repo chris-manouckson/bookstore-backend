@@ -5,7 +5,7 @@ from sqlalchemy import asc, desc
 
 from db import *
 from jwt_manager import *
-from models import UserRole, User, bcrypt
+from models import User, bcrypt
 from .admin_user_role_required import *
 from .parse_pagination_query import *
 from .parse_order_query import *
@@ -16,7 +16,6 @@ from mocks.token import token_mock
 
 from .errors import (
   UsersByIdNotFoundError,
-  UserRolesByIdNotFoundError,
   ForbiddenError,
 )
 
@@ -26,13 +25,6 @@ class UsersAll(Resource):
   @parse_search_query
   def get(self, offset, limit, order=('id', 'asc'), search=''):
     users_query = User.query
-
-    author_user_role = UserRole.query.filter_by(title='author').first()
-
-    if not author_user_role:
-      raise UserRolesByIdNotFoundError
-
-    users_query = users_query.filter_by(role_id=author_user_role.id)
 
     if search:
       search_regex = '%{}%'.format(search)
@@ -94,7 +86,7 @@ class UsersOne(Resource):
 
     if not user:
       raise UsersByIdNotFoundError
-
+    
     response_data = {
       'user': user.get_data(),
     }
