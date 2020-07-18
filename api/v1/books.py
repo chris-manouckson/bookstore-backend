@@ -6,6 +6,7 @@ from db import *
 from jwt_manager import *
 from models import User, Book
 from .admin_user_role_required import *
+from .parse_pagination_query import *
 from constants import price_currencies
 
 from mocks.book_isbn import book_isbn_mock
@@ -66,13 +67,21 @@ class BooksAll(Resource):
     
     return jsonify(data=response_data, message=response_message, status=200)
 
+  @parse_pagination_query
+  def get(self, offset, limit):
+    books_query = Book.query
 
-  def get(self):
-    # TODO: add search, pagination and ordering
-    books = Book.query.limit(10)
-    
+    books_total = books_query.count()
+
+    books = Book.query.offset(offset).limit(limit)
+
     response_data = {
       'books': [book.get_data() for book in books],
+      'pagination': {
+        'offset': offset,
+        'limit': limit,
+        'total': books_total,
+      }
     }
 
     return jsonify(data=response_data, status=200)

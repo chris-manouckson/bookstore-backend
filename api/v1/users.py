@@ -1,11 +1,12 @@
 from flask import request, jsonify
-from flask_restful import Resource
+from flask_restful import Resource, reqparse
 from flask_jwt_extended import jwt_required, get_jwt_identity
 
 from db import *
 from jwt_manager import *
 from models import UserRole, User, bcrypt
 from .admin_user_role_required import *
+from .parse_pagination_query import *
 
 from mocks.user import user_mock
 from mocks.token import token_mock
@@ -17,18 +18,27 @@ from .errors import (
 )
 
 class UsersAll(Resource):
-  def get(self):
+  @parse_pagination_query
+  def get(self, offset, limit):
     author_user_role = UserRole.query.filter_by(title='author').first()
 
-    # TODO: implement search, pagination and ordering
-    users = User.query.filter_by(role_id=author_user_role.id).limit(12)
+    users_query = User.query.filter_by(role_id=author_user_role.id)
+
+    users_total = users_query.count()
+
+    users = users_query.offset(offset).limit(limit)
 
     response_data = {
       'users': [user.get_data() for user in users],
+      'pagination': {
+        'offset': offset,
+        'limit': limit,
+        'total': users_total,
+      },
     }
 
     return jsonify(data=response_data, status=200)
-  
+
   @jwt_required
   def delete(self):
     current_user_id = get_jwt_identity()
