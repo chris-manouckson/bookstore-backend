@@ -9,6 +9,7 @@ from models import User, Book
 from .admin_user_role_required import *
 from .parse_pagination_query import *
 from .parse_order_query import *
+from .parse_search_query import *
 
 from constants import price_currencies
 
@@ -72,8 +73,18 @@ class BooksAll(Resource):
 
   @parse_pagination_query
   @parse_order_query
-  def get(self, offset, limit, order=('id', 'asc')):
+  @parse_search_query
+  def get(self, offset, limit, order=('id', 'asc'), search=''):
     books_query = Book.query
+
+    if search:
+      search_regex = '%{}%'.format(search)
+
+      books_query = books_query.filter(
+        Book.title.ilike(search_regex)
+        | Book.description.ilike(search_regex)
+        | Book.isbn.ilike(search_regex)
+      )
 
     order_column_name, order_direction = order
 

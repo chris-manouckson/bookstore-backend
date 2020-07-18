@@ -9,6 +9,7 @@ from models import UserRole, User, bcrypt
 from .admin_user_role_required import *
 from .parse_pagination_query import *
 from .parse_order_query import *
+from .parse_search_query import *
 
 from mocks.user import user_mock
 from mocks.token import token_mock
@@ -22,7 +23,8 @@ from .errors import (
 class UsersAll(Resource):
   @parse_pagination_query
   @parse_order_query
-  def get(self, offset, limit, order=('id', 'asc')):
+  @parse_search_query
+  def get(self, offset, limit, order=('id', 'asc'), search=''):
     users_query = User.query
 
     author_user_role = UserRole.query.filter_by(title='author').first()
@@ -31,6 +33,15 @@ class UsersAll(Resource):
       raise UserRolesByIdNotFoundError
 
     users_query = users_query.filter_by(role_id=author_user_role.id)
+
+    if search:
+      search_regex = '%{}%'.format(search)
+
+      users_query = users_query.filter(
+        User.first_name.ilike(search_regex)
+        | User.last_name.ilike(search_regex)
+        | User.email.ilike(search_regex)
+      )
 
     user_column_names = User.get_column_names()
 
@@ -41,7 +52,7 @@ class UsersAll(Resource):
         users_query = users_query.order_by(desc(order_column_name))
       else:
         users_query = users_query.order_by(order_column_name)
-    
+
     users_total = users_query.count()
 
     users = users_query.offset(offset).limit(limit)
