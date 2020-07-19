@@ -56,7 +56,15 @@ class BooksAll(Resource):
       price_currency=new_book_price_currency,
     )
 
-    current_user.books.append(new_book)
+    author_ids = [current_user_id]
+
+    if 'author_ids' in request_data and type(request_data['author_ids']) == list:
+      author_ids = list(set(author_ids + request_data['author_ids']))
+
+    for author_id in list(set(author_ids)):
+      author = User.query.get(author_id)
+      if author:
+        author.books.append(new_book)
 
     db.session.add(new_book)
     db.session.commit()

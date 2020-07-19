@@ -34,6 +34,7 @@ class Book(db.Model):
         'amount': self.price_amount,
         'currency': self.price_currency,
       },
+      'authors': [author.get_data() for author in self.authors],
     }
   
   @staticmethod
