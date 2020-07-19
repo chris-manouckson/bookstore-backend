@@ -113,6 +113,8 @@ class UsersOne(Resource):
       user.last_name = request_data['last_name']
     if 'phone' in request_data:
       user.phone = request_data['phone']
+    
+    db.session.commit()
 
     response_data = {
       'user': user.get_data(),

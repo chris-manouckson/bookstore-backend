@@ -170,6 +170,8 @@ class BooksOne(Resource):
 
       if 'currency' in request_data['price']:
         book.price_currency = request_data['price']['currency']
+    
+    db.session.commit()
 
     response_data = {
       'book': book.get_data(),
