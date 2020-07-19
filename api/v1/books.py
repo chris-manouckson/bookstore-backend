@@ -38,12 +38,12 @@ class BooksAll(Resource):
     if 'description' in request_data:
       new_book_description = request_data['description']
 
-    new_book_price_ammount = 0
+    new_book_price_amount = 0
     new_book_price_currency = price_currencies['usd']
 
     if 'price' in request_data and isinstance(request_data['price'], dict):
-      if 'ammount' in request_data['price']:
-        new_book_price_ammount = request_data['price']['ammount']
+      if 'amount' in request_data['price']:
+        new_book_price_amount = request_data['price']['amount']
 
       if 'currency' in request_data['price']:
         new_book_price_currency = request_data['price']['currency']
@@ -52,7 +52,7 @@ class BooksAll(Resource):
       title=request_data['title'],
       description=new_book_description,
       isbn=request_data['isbn'],
-      price_ammount=new_book_price_ammount,
+      price_amount=new_book_price_amount,
       price_currency=new_book_price_currency,
     )
 
@@ -165,8 +165,8 @@ class BooksOne(Resource):
       book.isbn = request_data['isbn']
 
     if 'price' in request_data and isinstance(request_data['price'], dict):
-      if 'ammount' in request_data['price']:
-        book.price_ammount = request_data['price']['ammount']
+      if 'amount' in request_data['price']:
+        book.price_amount = request_data['price']['amount']
 
       if 'currency' in request_data['price']:
         book.price_currency = request_data['price']['currency']

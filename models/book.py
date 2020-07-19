@@ -8,17 +8,17 @@ class Book(db.Model):
   title = db.Column(db.String(), nullable=False)
   description = db.Column(db.Text(), default='')
   isbn = db.Column(db.String(), nullable=False)
-  price_ammount = db.Column(db.Float(), default=0)
+  price_amount = db.Column(db.Float(), default=0)
   price_currency = db.Column(db.String(), default=price_currencies['usd'])
 
   created_at = db.Column(db.DateTime(), server_default=db.func.now())
   updated_at = db.Column(db.DateTime(), server_default=db.func.now(), server_onupdate=db.func.now())
 
-  def __init__(self, title, description, isbn, price_ammount, price_currency):
+  def __init__(self, title, description, isbn, price_amount, price_currency):
     self.title = title
     self.description = description
     self.isbn = isbn
-    self.price_ammount = price_ammount
+    self.price_amount = price_amount
     self.price_currency = price_currency
   
   def __repr__(self):
@@ -31,7 +31,7 @@ class Book(db.Model):
       'description': self.description,
       'isbn': self.isbn,
       'price': {
-        'ammount': self.price_ammount,
+        'amount': self.price_amount,
         'currency': self.price_currency,
       },
     }
