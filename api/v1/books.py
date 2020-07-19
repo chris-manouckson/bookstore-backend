@@ -59,7 +59,13 @@ class BooksAll(Resource):
     author_ids = [current_user_id]
 
     if 'author_ids' in request_data and type(request_data['author_ids']) == list:
-      author_ids = list(set(author_ids + request_data['author_ids']))
+      admin_user_role = UserRole.query.filter_by(title='admin').first()
+
+      author_ids = [
+        author_id
+        for author_id in list(set(author_ids + request_data['author_ids']))
+        if User.query.get(author_id).role_id != admin_user_role.id
+      ]
 
     for author_id in list(set(author_ids)):
       author = User.query.get(author_id)
@@ -99,14 +105,16 @@ class BooksAll(Resource):
     book_column_names = Book.get_column_names()
 
     if order_column_name in book_column_names:
+      order_by = Book.__table__.columns[order_column_name]
+
       if order_direction == 'desc':
-        books_query = books_query.order_by(desc(order_column_name))
-      else:
-        books_query = books_query.order_by(order_column_name)
+        order_by = order_by.desc()
+
+      books_query = books_query.order_by(order_by)
 
     books_total = books_query.count()
 
-    books = Book.query.offset(offset).limit(limit)
+    books = books_query.offset(offset).limit(limit)
 
     response_data = {
       'books': [book.get_data() for book in books],
@@ -118,6 +126,9 @@ class BooksAll(Resource):
       'order': {
         'column_name': order_column_name,
         'direction': order_direction,
+      },
+      'search': {
+        'text': search,
       },
     }
 
