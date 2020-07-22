@@ -76,6 +76,9 @@ class UsersAll(Resource):
         'column_name': order_column_name,
         'direction': order_direction,
       },
+      'search': {
+        'text': search,
+      },
     }
 
     return jsonify(data=response_data, status=200)
