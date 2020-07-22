@@ -5,7 +5,7 @@ from sqlalchemy import asc, desc
 
 from db import *
 from jwt_manager import *
-from models import User, bcrypt
+from models import User, UserRole, bcrypt
 from .admin_user_role_required import *
 from .parse_pagination_query import *
 from .parse_order_query import *
@@ -19,12 +19,28 @@ from .errors import (
   ForbiddenError,
 )
 
+request_parser = reqparse.RequestParser()
+
+request_parser.add_argument(
+  'include_admins',
+  type=int,
+  choices=(0, 1),
+  location='args'
+)
+
 class UsersAll(Resource):
   @parse_pagination_query
   @parse_order_query
   @parse_search_query
   def get(self, offset, limit, order=('id', 'asc'), search=''):
+    request_args = request_parser.parse_args()
+
     users_query = User.query
+
+    if not request_args['include_admins']:
+      author_user_role = UserRole.query.filter_by(title='author').first()
+
+      users_query = users_query.filter_by(role_id=author_user_role.id)
 
     if search:
       search_regex = '%{}%'.format(search)
